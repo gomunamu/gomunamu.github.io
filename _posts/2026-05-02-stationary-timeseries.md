@@ -1,7 +1,7 @@
 ---
-title: "<% tp.file.title %>"
-date: <% tp.date.now("YYYY-MM-DD HH:mm:ss") %> +0900
-categories: []
+title: "모수 추정과 시계열 예측"
+date: 2026-05-02 17:19:00 +0900
+categories: [Time Series, 기초]
 tags: []
 author: gomunamu
 math: true
