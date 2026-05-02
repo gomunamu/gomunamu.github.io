@@ -23,6 +23,16 @@ description: "시계열 분석, 머신러닝, Python 실전 노트"
 timezone: Asia/Seoul
 lang: ko-KR
 
+math: true
+
+comments:
+  active: utterances
+  utterances:
+    repo: "gomunamu/gomunamu.github.io"
+    issue_term: pathname
+google_analytics:
+  id: "G-0ERV1QJHD9"
+
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
 url: "https://gomunamu.github.io"
