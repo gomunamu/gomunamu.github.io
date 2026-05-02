@@ -14,19 +14,21 @@ timezone:
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Chirpy # the main title
+title: "Time Series Lab" # the main title
 
-tagline: A text-focused Jekyll theme # it will display as the subtitle
+tagline: "시계열 분석과 ML 인사이트"
 
-description: >- # used by seo meta and the atom feed
-  A minimal, responsive and feature-rich Jekyll theme for technical writing.
+description: "시계열 분석, 머신러닝, Python 실전 노트"
+
+timezone: Asia/Seoul
+lang: ko-KR
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: ""
+url: "https://gomunamu.github.io"
 
 github:
-  username: github_username # change to your GitHub username
+  username: gomunamu # change to your GitHub username
 
 twitter:
   username: twitter_username # change to your Twitter username
