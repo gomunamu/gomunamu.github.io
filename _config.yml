@@ -21,6 +21,7 @@ tagline: "주인장과 함께 공부하며 배우는 시계열 분석"
 description: "시계열 분석, 머신러닝, Python 실전 노트"
 
 timezone: Asia/Seoul
+
 lang: ko-KR
 
 math: true
@@ -30,6 +31,7 @@ comments:
   utterances:
     repo: "gomunamu/gomunamu.github.io"
     issue_term: pathname
+
 analytics:
   google:
     id: G-0ERV1QJHD9
