@@ -122,7 +122,79 @@ plot_pacf(series, lags=30)
 
 ### 2.2 현실은 그리 깔끔하지 않다
 
-여기까지는 교과서적입니다. 실제 데이터에서는 ACF와 PACF가 둘 다 애매하게 감쇠하거나, 잡음이 많아 패턴이 잘 안 보일 때가 흔합니다. 그래서 실무에서는 ACF/PACF로 후보 차수 몇 개를 추리고 → 각 후보를 적합한 다음 → **AIC, BIC 같은 정보 기준(information criterion)** 으로 최종 선택합니다.[^4]
+여기까지는 교과서적입니다. 실제 데이터에서는 ACF와 PACF가 둘 다 애매하게 감쇠하거나, 잡음이 많아 패턴이 잘 안 보일 때가 흔합니다. 그래서 실무에서는 ACF/PACF로 후보 차수 몇 개를 추리고 → 각 후보를 적합한 다음 → **AIC, BIC 같은 정보 기준(information criterion)** 으로 최종 선택합니다.
+
+### 2.3 AIC와 BIC — 모형 선택의 두 잣대
+
+**AIC (Akaike Information Criterion)** 와 **BIC (Bayesian Information Criterion)** 는 둘 다 같은 발상을 따릅니다. "모형이 데이터를 얼마나 잘 설명하는가(가능도)"와 "모형이 얼마나 복잡한가(모수 개수)"를 함께 평가해서, 둘의 균형이 좋은 모형을 고르는 것입니다.[^4]
+
+수식으로는 다음과 같습니다.
+
+$$
+\begin{aligned}
+\text{AIC} &= -2 \log L + 2k \\
+\text{BIC} &= -2 \log L + k \log n
+\end{aligned}
+$$
+
+여기서 $\log L$은 적합된 모형의 로그가능도, $k$는 모수 개수, $n$은 표본 크기입니다. 두 값 모두 **작을수록 좋은 모형**입니다.
+
+핵심은 두 번째 항입니다. 모수가 많을수록 가능도($\log L$)는 거의 항상 올라가지만(과적합), 두 번째 항이 그 대가를 페널티로 부과합니다. 즉 "모수를 추가해도 그만큼 설명력이 늘지 않으면 채택하지 마라"는 원리입니다.
+
+AIC와 BIC의 차이는 페널티의 강도입니다.
+
+| 기준 | 페널티 항 | 성격 |
+|---|---|---|
+| **AIC** | $2k$ | 표본 크기와 무관한 고정 페널티. 더 복잡한 모형을 허용하는 경향 |
+| **BIC** | $k \log n$ | 표본 크기 $n$이 클수록 페널티가 커짐. 더 단순한 모형을 선택하는 경향 |
+
+데이터가 많아질수록 BIC는 AIC보다 더 단순한 모형을 고릅니다. 학술적 입장은 갈리지만, 시계열 예측 실무에서는 보통 **AIC를 더 자주** 씁니다. BIC가 너무 단순한 모형을 선호해 예측력이 떨어질 수 있다는 우려 때문입니다.[^5]
+
+### 2.4 auto_arima로 자동 차수 선택
+
+`pmdarima` 패키지의 `auto_arima`는 위 원리를 자동화합니다. 가능한 차수 조합을 그리드 탐색하며 각각의 AIC(또는 BIC)를 계산하고, 최소값을 주는 모형을 반환합니다.
+
+```python
+import numpy as np
+import pandas as pd
+from pmdarima import auto_arima
+
+# 예시 데이터 (월별 시계열 가정)
+# series는 pandas Series 또는 numpy array
+
+# AIC 기준 자동 선택
+model_aic = auto_arima(
+    series,
+    start_p=0, max_p=5,        # AR 차수 후보 0~5
+    start_q=0, max_q=5,        # MA 차수 후보 0~5
+    d=None,                     # None이면 ADF 검정으로 자동 결정
+    seasonal=True,
+    m=12,                       # 월별 데이터의 계절 주기
+    start_P=0, max_P=2,
+    start_Q=0, max_Q=2,
+    D=None,                     # 계절 차분도 자동
+    information_criterion='aic',  # 'aic' 또는 'bic'
+    stepwise=True,              # 빠른 stepwise 탐색
+    suppress_warnings=True,
+    trace=True,                 # 탐색 과정 출력
+)
+
+print(model_aic.summary())
+
+# 같은 데이터를 BIC 기준으로도 비교
+model_bic = auto_arima(
+    series, seasonal=True, m=12,
+    information_criterion='bic',
+    stepwise=True, suppress_warnings=True,
+)
+
+print(f"AIC 기준 선택: {model_aic.order}, seasonal={model_aic.seasonal_order}")
+print(f"BIC 기준 선택: {model_bic.order}, seasonal={model_bic.seasonal_order}")
+```
+
+`stepwise=True`를 권하는 이유: 차수 조합을 모두 격자 탐색하면 시간이 오래 걸리기 때문입니다. Hyndman & Khandakar(2008)가 제안한 stepwise 알고리즘은 후보 모형을 효율적으로 좁혀 가며 거의 같은 결과를 훨씬 빠르게 줍니다.[^6]
+
+> **유의할 점**: `auto_arima`는 만능이 아닙니다. AIC/BIC가 최소인 모형이 반드시 예측 성능이 가장 좋은 것도 아니고, 잔차 진단(자기상관, 정규성)을 통과한다는 보장도 없습니다. 자동 선택 후에는 **잔차의 ACF/PACF, Ljung-Box 검정** 등으로 모형이 데이터를 충분히 설명하는지 별도로 점검해야 합니다.
 
 이번 글에서는 차수 결정을 그 정도까지만 다루고, 차수 $p, q$가 정해졌다고 가정한 상태로 모형을 쌓아 가겠습니다.
 
@@ -168,7 +240,7 @@ $d$는 통계적 추정이라기보다 **진단 기반 결정**입니다. 절차
 2. 비정상이면 1차 차분 후 다시 검정 → 정상이면 $d=1$
 3. 그래도 비정상이면 2차 차분 → $d=2$
 
-**실무에서 $d \geq 3$인 경우는 거의 없습니다.** Hyndman & Athanasopoulos(2021)도 명시적으로 "거의 항상 $d=0, 1, 2$ 안에서 결정된다"고 지적합니다.[^5] 3차 이상의 차분이 필요하다는 건 시계열에 비정상성 외의 구조적 문제(예: 분산 비균일성, 구조변화)가 있다는 신호일 가능성이 높습니다. 이때는 차분 대신 로그/Box-Cox 변환이나 구조변화 모형을 먼저 검토하는 게 맞습니다.
+**실무에서 $d \geq 3$인 경우는 거의 없습니다.** Hyndman & Athanasopoulos(2021)도 명시적으로 "거의 항상 $d=0, 1, 2$ 안에서 결정된다"고 지적합니다.[^7] 3차 이상의 차분이 필요하다는 건 시계열에 비정상성 외의 구조적 문제(예: 분산 비균일성, 구조변화)가 있다는 신호일 가능성이 높습니다. 이때는 차분 대신 로그/Box-Cox 변환이나 구조변화 모형을 먼저 검토하는 게 맞습니다.
 
 ### 4.2 정리
 
@@ -228,7 +300,7 @@ SARIMA(p, d, q)(P, D, Q, m)는 모수 7개로 보이지만, 실제로 $m$은 데
 
 ## 6. SARIMAX — 외생변수까지
 
-마지막 글자 X는 **eXogenous(외생변수)** 의 약자입니다.[^6] 다변량 시계열 모델이 아니라는 점을 분명히 짚고 가야 합니다.
+마지막 글자 X는 **eXogenous(외생변수)** 의 약자입니다.[^8] 다변량 시계열 모델이 아니라는 점을 분명히 짚고 가야 합니다.
 
 ### 6.1 외생변수란
 
@@ -252,17 +324,41 @@ model = SARIMAX(y, exog=X, order=(1,1,1), seasonal_order=(1,1,1,12))
 result = model.fit()
 ```
 
-### 6.2 다변량 시계열은 다른 이야기
+### 6.2 SARIMAX와 다변량 시계열은 무엇이 다른가
 
-여기서 분명히 짚어 두어야 할 것이 있습니다. **SARIMAX는 진짜 다변량 시계열 모형이 아닙니다.** 외생변수 $x_t$는 "예측 대상이 아닌 입력 변수"로 취급되며, $x_t$의 미래 값은 별도로 알거나 가정해야 합니다.
+여기서 분명히 짚어 두어야 할 것이 있습니다. **SARIMAX는 진짜 다변량 시계열 모형이 아닙니다.** 외생변수 $x_t$는 "예측 대상이 아닌 입력 변수"로 취급됩니다. 이걸 입력 데이터 관점과 처리 과정 관점 두 측면에서 풀어 보겠습니다.
 
-여러 시계열을 **상호 영향**을 가진 채로 동시에 모델링하려면 다른 모형이 필요합니다.
+**(1) 입력 데이터의 역할이 다릅니다**
 
-- **VAR (Vector AutoRegression)**: 여러 시계열이 서로의 과거에 영향받는 다변량 자기회귀 모형
-- **VECM (Vector Error Correction Model)**: 공적분(cointegration) 관계가 있는 다변량 비정상 시계열용
-- **DFM (Dynamic Factor Model)**: 많은 시계열이 소수의 공통 요인에 의해 움직인다고 가정하는 모형
+| 구분 | SARIMAX | 다변량 시계열 모형 (예: VAR) |
+|---|---|---|
+| 예측 대상 | $y_t$ 하나 | $y_{1,t}, y_{2,t}, \ldots, y_{k,t}$ 모두 |
+| 입력 시계열 | $y_t$ + 외생변수 $x_t$ | 모든 시계열을 동시에 |
+| $x_t$의 역할 | $y_t$를 설명하는 보조 | "보조"가 아니라 동등한 변수 |
+| 변수 간 영향 | $x_t \to y_t$ (단방향만) | $y_{1,t} \leftrightarrow y_{2,t}$ (상호) |
 
-이 영역으로 들어가면 본격적인 다변량 통계학과 행렬대수가 필요해지고, 최근에는 머신러닝/딥러닝 기반 다변량 시계열 모형(LSTM, Temporal Fusion Transformer 등)도 활발히 사용됩니다. 이건 별도 시리즈로 다루는 게 맞을 것 같습니다.
+핵심은 "방향"입니다. SARIMAX는 외생변수 $x_t$가 $y_t$에 영향을 주지만 그 반대는 모형에 들어가지 않습니다. 반면 VAR은 모든 변수가 서로의 과거에 영향을 받는 양방향 구조입니다.
+
+**(2) 미래 예측 시 처리가 다릅니다**
+
+이 차이가 실무에서 가장 두드러집니다.
+
+- **SARIMAX**: 미래 예측을 하려면 **외생변수의 미래 값** $x_{t+1}, x_{t+2}, \ldots$ 를 별도로 알고 있어야 합니다. 휴일 여부 같은 결정적 변수는 미리 알 수 있고, 기온 같은 변수는 별도 예측 모형이 필요합니다. **외생변수의 미래를 모르면 SARIMAX는 미래를 예측할 수 없습니다.**
+- **VAR**: 모든 변수의 미래를 모형 자체가 함께 예측합니다. 별도 입력이 필요 없습니다. 다만 그 대가로 모수가 훨씬 많아집니다(변수 $k$개에 시차 $p$개면 모수 개수가 $k^2 p$ 규모).
+
+**(3) 가정의 비대칭성**
+
+SARIMAX는 $y_t$가 $x_t$를 인과적으로 거꾸로 영향 주지 않는다는 가정 위에 서 있습니다. 만약 사실은 $y_t$도 $x_t$에 영향을 주는데 (예: 매출이 광고비 결정에 피드백되는 경우) SARIMAX로 잘못 모델링하면 추정량이 편향됩니다. 이런 상황이라면 처음부터 VAR을 고려하는 게 맞습니다.
+
+**(4) 다변량 시계열 모형의 옵션**
+
+여러 시계열을 진정으로 함께 다루려면 다음 모형들이 사용됩니다.
+
+- **VAR (Vector AutoRegression)**: 여러 시계열이 서로의 과거에 영향받는 다변량 자기회귀 모형. 가장 표준적인 출발점.
+- **VECM (Vector Error Correction Model)**: 변수들 사이에 공적분(cointegration) 관계가 있는 비정상 다변량 시계열용.
+- **DFM (Dynamic Factor Model)**: 많은 시계열이 소수의 공통 요인에 의해 움직인다고 가정하는 모형. 거시경제·금융에서 자주 사용.
+
+이 영역은 행렬대수와 다변량 통계가 본격적으로 들어오는 지점입니다. 최근에는 머신러닝/딥러닝 기반 다변량 시계열 모형(LSTM, Temporal Fusion Transformer 등)도 활발히 사용됩니다. 이건 별도 시리즈로 다루는 게 맞을 것 같습니다.
 
 ## 7. 정리
 
@@ -285,20 +381,28 @@ result = model.fit()
 
 [^3]: 이 표는 Box-Jenkins 식별 절차의 핵심입니다. 자세한 논의와 예시는 Hamilton(1994) Ch. 4 또는 Box et al.(2015) Ch. 6에서 다룹니다.
 
-[^4]: AIC(Akaike Information Criterion), BIC(Bayesian Information Criterion)는 모형의 가능도와 모수 개수를 함께 고려해 모형을 비교하는 기준입니다. 일반적으로 BIC가 AIC보다 더 단순한 모형을 선택하는 경향이 있습니다.
+[^4]: AIC는 Akaike(1974) "A new look at the statistical model identification"에서, BIC는 Schwarz(1978) "Estimating the dimension of a model"에서 처음 제안되었습니다. 두 기준의 통계학적 유도와 비교에 대한 표준 레퍼런스는 Burnham & Anderson(2002) *Model Selection and Multimodel Inference* (2nd ed., Springer)입니다.
 
-[^5]: Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.), Section 9.1. 무료 온라인 교재로 공개되어 있습니다 (otexts.com/fpp3).
+[^5]: AIC vs BIC 선택은 사용 목적과 표본 크기에 따라 달라집니다. AIC는 점근적으로 예측 오차를 최소화하는 모형을 고르는 경향이 있고, BIC는 표본 크기가 무한대로 갈 때 진짜 모형(true model)을 일치성 있게 선택합니다. 시계열 예측 실무 권고는 Hyndman & Athanasopoulos(2021) Section 9.10 참고.
 
-[^6]: 외생변수(exogenous variable)란 모형 안에서 결정되지 않고 외부에서 주어지는 변수를 의미합니다. 반대 개념은 내생변수(endogenous variable)입니다. SARIMAX의 외생변수는 정확히 말해 "조건부 외생(conditionally exogenous)" 가정 하에 다뤄지며, 자세한 논의는 Hamilton(1994) Ch. 8 참고.
+[^6]: Hyndman, R. J., & Khandakar, Y. (2008). "Automatic Time Series Forecasting: The forecast Package for R." *Journal of Statistical Software*, 27(3), 1–22. R의 `forecast::auto.arima`와 Python `pmdarima`의 핵심 알고리즘이 이 논문에 기반합니다.
+
+[^7]: Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.), Section 9.1. 무료 온라인 교재로 공개되어 있습니다 (otexts.com/fpp3).
+
+[^8]: 외생변수(exogenous variable)란 모형 안에서 결정되지 않고 외부에서 주어지는 변수를 의미합니다. 반대 개념은 내생변수(endogenous variable)입니다. SARIMAX의 외생변수는 정확히 말해 "조건부 외생(conditionally exogenous)" 가정 하에 다뤄지며, 자세한 논의는 Hamilton(1994) Ch. 8 참고.
 
 ---
 
 **참고문헌**
 
+- Akaike, H. (1974). A new look at the statistical model identification. *IEEE Transactions on Automatic Control*, 19(6), 716–723.
 - Box, G. E. P., Jenkins, G. M., Reinsel, G. C., & Ljung, G. M. (2015). *Time Series Analysis: Forecasting and Control* (5th ed.). Wiley.
+- Brockwell, P. J., & Davis, R. A. (2016). *Introduction to Time Series and Forecasting* (3rd ed.). Springer.
+- Burnham, K. P., & Anderson, D. R. (2002). *Model Selection and Multimodel Inference: A Practical Information-Theoretic Approach* (2nd ed.). Springer.
 - Hamilton, J. D. (1994). *Time Series Analysis*. Princeton University Press.
 - Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.). OTexts. https://otexts.com/fpp3/
-- Brockwell, P. J., & Davis, R. A. (2016). *Introduction to Time Series and Forecasting* (3rd ed.). Springer.
+- Hyndman, R. J., & Khandakar, Y. (2008). Automatic Time Series Forecasting: The forecast Package for R. *Journal of Statistical Software*, 27(3), 1–22.
+- Schwarz, G. (1978). Estimating the dimension of a model. *The Annals of Statistics*, 6(2), 461–464.
 
 ---
 
