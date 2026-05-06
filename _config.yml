@@ -9,8 +9,6 @@ description: "시계열 분석, 머신러닝, Python 실전 노트"
 url: "https://gomunamu.github.io"
 
 # ─── 플러그인 ─────────────────────────────────
-plugins:
-  - jekyll-sitemap
 
 # ─── 소셜 (실명 대신 닉네임도 무방) ─────────────
 github:
