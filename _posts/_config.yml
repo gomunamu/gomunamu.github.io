@@ -1,0 +1,37 @@
+# ─── 언어 / 시간대 ───────────────────────────
+lang: ko-KR
+timezone: Asia/Seoul
+
+# ─── 사이트 기본 정보 ─────────────────────────
+title: "Time Series Lab"
+tagline: "주인장과 함께 공부하며 배우는 시계열 분석"
+description: "시계열 분석, 머신러닝, Python 실전 노트"
+url: "https://gomunamu.github.io"
+
+# ─── 플러그인 ─────────────────────────────────
+
+# ─── 소셜 (실명 대신 닉네임도 무방) ─────────────
+github:
+  username: gomunamu
+
+social:
+  name: gomunamu          # 원하시는 이름으로
+  email: gomunamu@gmail.com
+  links:
+    - https://github.com/gomunamu
+
+# ─── Analytics (중복 제거, ID 올바르게) ──────────
+analytics:
+  google:
+    id: G-0ERV1QJHD9      # ← 여기 하나만
+
+# ─── 댓글 (중복 제거) ────────────────────────────
+comments:
+  provider: utterances
+  utterances:
+    repo: "gomunamu/gomunamu.github.io"
+    issue_term: pathname
+
+# ─── Search Console 소유권 인증 (나중에 채울 곳) ──
+webmaster_verifications:
+  google: google-site-verification=Jm7HruHdutSkkDl2HYOw7__HJ29PX9bOB3t37NqZwl0  # ← Search Console에서 발급받은 코드 여기
