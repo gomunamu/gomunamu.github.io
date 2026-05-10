@@ -12,12 +12,12 @@ math: true
 
 ## 1. 지수평활의 발상 — "최근 값을 더 무겁게"
 
-지금까지의 시계열 $y_1, y_2, \ldots, y_t$를 가지고 다음 값 $\hat{y}_{t+1}$을 예측한다고 합시다.
+직관부터 시작합니다. 지금까지의 시계열 $y\_1, y\_2, \ldots, y\_t$를 가지고 다음 값 $\hat{y}\_{t+1}$을 예측한다고 합시다.
 
 가장 단순한 두 가지 발상은:
 
-- **(전체 평균)** $\hat{y}_{t+1} = \bar{y} = \frac{1}{t} \sum_{i=1}^{t} y_i$
-- **(직전 값)** $\hat{y}_{t+1} = y_t$
+- **(전체 평균)** $\hat{y}\_{t+1} = \bar{y} = \frac{1}{t} \sum\_{i=1}^{t} y\_i$
+- **(직전 값)** $\hat{y}\_{t+1} = y\_t$
 
 전체 평균은 모든 과거를 똑같이 취급해 너무 둔감하고, 직전 값만 쓰는 건 노이즈에 너무 민감합니다. 그 사이의 절충이 **이동평균**입니다.
 
@@ -27,7 +27,7 @@ $$
 
 이건 합리적이지만 한 가지 어색한 점이 있습니다 — **윈도우 안의 값들을 모두 동등하게 취급**한다는 점입니다. 직관적으로는 어제 값이 일주일 전 값보다 더 중요할 텐데요.
 
-지수평활은 이 아이디어를 가장 깔끔하게 식으로 옮깁니다. **최근 값에 더 큰 가중치, 과거로 갈수록 기하급수적으로 감쇠하는 가중치**를 부여합니다.
+지수평활은 이 직관을 가장 깔끔하게 식으로 옮깁니다. **최근 값에 더 큰 가중치, 과거로 갈수록 기하급수적으로 감쇠하는 가중치**를 부여합니다.
 
 $$
 \hat{y}_{t+1} = \alpha y_t + \alpha(1-\alpha) y_{t-1} + \alpha(1-\alpha)^2 y_{t-2} + \cdots
@@ -72,7 +72,7 @@ model = SimpleExpSmoothing(series).fit()  # α 자동 추정
 forecast = model.forecast(steps=12)
 ```
 
-여기서 한계가 보입니다. **SES의 예측은 한 시점 이후로는 모두 같은 값(평탄선)** 입니다. $\hat{y}_{t+1} = \hat{y}_{t+2} = \hat{y}_{t+3} = \cdots$. SES는 본질적으로 "수준(level)"만 추적하기 때문에 추세를 모릅니다. 그래서 다음 단계가 필요합니다.
+여기서 한계가 보입니다. **SES의 예측은 한 시점 이후로는 모두 같은 값(평탄선)** 입니다. $\hat{y}\_{t+1} = \hat{y}\_{t+2} = \hat{y}\_{t+3} = \cdots$. SES는 본질적으로 "수준(level)"만 추적하기 때문에 추세를 모릅니다. 그래서 다음 단계가 필요합니다.
 
 ## 3. Holt's Linear Trend — 추세 추가
 
@@ -88,8 +88,8 @@ $$
 
 세 식의 의미는:
 
-- $\ell_t$: 시점 $t$의 **수준(level)** — "현재 가치가 얼마인가"
-- $b_t$: 시점 $t$의 **추세(trend)** — "단위 시간당 얼마나 변하는가"
+- $\ell\_t$: 시점 $t$의 **수준(level)** — "현재 가치가 얼마인가"
+- $b\_t$: 시점 $t$의 **추세(trend)** — "단위 시간당 얼마나 변하는가"
 - 예측: $h$ 시점 후의 값은 현재 수준 + $h$만큼의 추세
 
 평활 모수가 두 개($\alpha, \beta$)로 늘었습니다. $\alpha$는 수준의 평활 정도, $\beta$는 추세의 평활 정도입니다. 둘 다 데이터로부터 추정합니다.
@@ -133,7 +133,7 @@ forecast = model.forecast(steps=24)
 
 ![Holt-Winters on Air Passengers](/assets/img/posts/fig_hw_airpass.png)
 
-24개월 예측 MAPE가 **6.39%** 입니다. 이전 글에서 SARIMA(0,1,1)(0,1,1)$_{12}$이 같은 데이터에서 얻은 8.52%보다 살짝 좋습니다. 모형의 가정과 데이터의 성격이 잘 맞으면 Holt-Winters가 SARIMA를 이기는 경우도 흔합니다.
+24개월 예측 MAPE가 **6.39%** 입니다. 이전 글에서 SARIMA(0,1,1)(0,1,1)$\_{12}$이 같은 데이터에서 얻은 8.52%보다 살짝 좋습니다. 모형의 가정과 데이터의 성격이 잘 맞으면 Holt-Winters가 SARIMA를 이기는 경우도 흔합니다.
 
 > **함정 박스 2 — 가법 vs 곱셈 컴포넌트 선택**
 > 
@@ -154,7 +154,7 @@ $$
 | 컴포넌트 | 가능한 값 | 의미 |
 |---|---|---|
 | **Error** | A, M | 가법(additive) 또는 곱셈(multiplicative) |
-| **Trend** | N, A, A$_d$ | 없음 / 가법 / 가법 감쇠(damped) |
+| **Trend** | N, A, A$\_d$ | 없음 / 가법 / 가법 감쇠(damped) |
 | **Seasonal** | N, A, M | 없음 / 가법 / 곱셈 |
 
 조합하면 **30개 모델군**이 됩니다.[^5] 익숙한 이름들과의 대응:
@@ -165,7 +165,7 @@ $$
 | ETS(A, A, N) | Holt's linear trend |
 | ETS(A, A, A) | Holt-Winters 가법 |
 | ETS(A, A, M) | Holt-Winters 곱셈 |
-| ETS(A, A$_d$, A) | 감쇠 추세 + 가법 계절성 |
+| ETS(A, A$\_d$, A) | 감쇠 추세 + 가법 계절성 |
 
 ETS의 진짜 강점은 **상태공간 모형(state space model)** 으로 정식화됐다는 점입니다.[^6] 이게 두 가지 실용적 이점을 줍니다.
 
@@ -189,7 +189,7 @@ model = ETSModel(train, error='add', trend='add', seasonal='mul',
 
 ## 6. ETS vs SARIMA — 같은 데이터, 두 가지 접근
 
-이제 공정한 비교를 해 보겠습니다. 이전 글에서 SARIMA(0,1,1)(0,1,1)$_{12}$로 Air Passengers를 24개월 예측했을 때 MAPE 8.52%를 얻었습니다. 같은 train/test split에 ETS(A,A,M)를 적용해 봅니다.
+이제 공정한 비교를 해 보겠습니다. 이전 글에서 SARIMA(0,1,1)(0,1,1)$\_{12}$로 Air Passengers를 24개월 예측했을 때 MAPE 8.52%를 얻었습니다. 같은 train/test split에 ETS(A,A,M)를 적용해 봅니다.
 
 ![ETS vs SARIMA](/assets/img/posts/fig_ets_vs_sarima.png)
 
@@ -197,7 +197,7 @@ model = ETSModel(train, error='add', trend='add', seasonal='mul',
 |---|---:|
 | Holt-Winters (수동) | 6.39% |
 | **ETS(A, A, M)** | **6.56%** |
-| SARIMA(0,1,1)(0,1,1)$_{12}$ | 8.52% |
+| SARIMA(0,1,1)(0,1,1)$\_{12}$ | 8.52% |
 
 **이 데이터에서는 ETS가 SARIMA보다 살짝 좋습니다.** 그렇다고 ETS가 항상 SARIMA보다 좋다는 뜻은 아닙니다. 두 모형은 서로 잘하는 영역이 다릅니다.
 
@@ -246,7 +246,7 @@ model = ETSModel(train, error='add', trend='add', seasonal='mul',
 
 [^5]: 2 (error) × 3 (trend) × 3 (seasonal) = 18가지가 기본이고, error와 seasonal의 호환성 조건(곱셈 계절성에 가법 오차 등) 때문에 실제 유효한 모델은 더 적습니다. 자세한 분류는 Hyndman & Athanasopoulos(2021) Section 8.6 참고.
 
-[^6]: 상태공간 모형(state space model)은 관측 가능한 변수($y_t$)와 관측 불가능한 상태 변수들($\ell_t, b_t, s_t$)을 분리하여, 상태가 시간에 따라 어떻게 진화하고 그것이 관측치로 어떻게 드러나는지를 두 종류의 방정식(state equation, observation equation)으로 표현하는 틀입니다. 칼만 필터가 같은 틀의 대표적 추정 도구입니다.
+[^6]: 상태공간 모형(state space model)은 관측 가능한 변수($y\_t$)와 관측 불가능한 상태 변수들($\ell\_t, b\_t, s\_t$)을 분리하여, 상태가 시간에 따라 어떻게 진화하고 그것이 관측치로 어떻게 드러나는지를 두 종류의 방정식(state equation, observation equation)으로 표현하는 틀입니다. 칼만 필터가 같은 틀의 대표적 추정 도구입니다.
 
 [^7]: Makridakis, S., & Hibon, M. (2000). "The M3-Competition: results, conclusions and implications." *International Journal of Forecasting*, 16(4), 451–476. 이후 M4 (2018), M5 (2020) 대회에서도 단순 모형의 조합이 복잡한 단일 모형 못지않게 좋은 성능을 보인다는 결과가 일관되게 확인되었습니다.
 
