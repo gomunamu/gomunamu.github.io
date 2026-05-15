@@ -81,14 +81,14 @@ plt.show()
 | **가중치** | 윈도우 내 모두 동일 ($\frac{1}{k}$) | 최근일수록 지수적으로 큼 |
 | **곡선 모양** | 한 점이 들어오고 빠질 때 미세 출렁임 | 연속적으로 부드럽게 감쇠 |
 
-> **용어 혼동 — `rolling().mean()`과 ARIMA의 MA**
+> **용어 혼동 — 단순 이동평균과 ARIMA MA**
 >
 > 수학적으로는 같은 연산인데 **적용 대상이 다릅니다**.
 >
-> - `rolling(k).mean()` → **관측값**에 이동평균 적용 (데이터 평활)
-> - ARIMA MA(q) → **백색잡음 충격**에 이동평균 적용 (모형 구조)
+> - 단순 이동평균 (`rolling(k).mean()`) → **관측값**에 적용 (데이터 평활)
+> - ARIMA MA(q) → **백색잡음 충격**에 적용 (모형 구조)
 >
-> 연결 고리는 Slutsky(1927)입니다. 백색잡음 수열 $\varepsilon_t$에 `rolling(k).mean()`을 그대로 적용하면:
+> 연결 고리는 Slutsky(1927)입니다. 백색잡음 수열 $\varepsilon_t$에 단순 이동평균을 그대로 적용하면:
 >
 > $$y_t = \frac{1}{k}(\varepsilon_t + \varepsilon_{t-1} + \cdots + \varepsilon_{t-k+1})$$
 >
@@ -96,7 +96,7 @@ plt.show()
 >
 > $$y_t = \varepsilon_t + \theta_1\varepsilon_{t-1} + \cdots + \theta_q\varepsilon_{t-q}$$
 >
-> 이름이 같은 건 우연이 아닙니다. 충격에 `rolling().mean()`을 적용한다는 뜻 그대로입니다. 혼동의 원인은 나중에 관측값 평활에도 같은 이름이 붙었기 때문입니다.
+> 이름이 같은 건 우연이 아닙니다. 충격에 단순 이동평균을 적용한다는 뜻 그대로입니다. 혼동의 원인은 나중에 관측값 평활에도 같은 이름이 붙었기 때문입니다.
 
 ## 2. SES — 단순지수평활(Simple Exponential Smoothing)
 
