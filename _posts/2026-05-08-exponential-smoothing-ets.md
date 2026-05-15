@@ -41,6 +41,47 @@ $$
 
 두 곡선이 비슷해 보이지만 미묘한 차이가 있습니다. 이동평균은 윈도우의 양 끝에서 한 점이 들어오거나 빠지면서 약간의 출렁임이 있고, 지수평활은 더 부드럽게 이어집니다. 또 이동평균은 윈도우 크기만큼 시작 부분에서 결측이 생기는 반면, 지수평활은 첫 시점부터 값을 줍니다.
 
+직접 실행해 볼 수 있는 코드는 아래와 같습니다. statsmodels 내장 Air Passengers 데이터를 그대로 씁니다.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+from statsmodels.tsa.holtwinters import SimpleExpSmoothing
+
+# Air Passengers 로드 (statsmodels 내장)
+ap = sm.datasets.get_rdataset("AirPassengers", "datasets").data
+series = pd.Series(
+    ap["value"].values,
+    index=pd.date_range("1949-01", periods=144, freq="MS"),
+    name="passengers",
+)
+
+# 이동평균 — 윈도우 안의 값을 단순 평균 (앞 k-1개는 NaN)
+ma = series.rolling(window=12).mean()
+
+# 지수평활 — α를 데이터로부터 자동 추정
+ses = SimpleExpSmoothing(series).fit()
+alpha = ses.params["smoothing_level"]
+
+fig, ax = plt.subplots(figsize=(12, 4))
+ax.plot(series, color="lightgray", label="원본")
+ax.plot(ma, label="이동평균 (k=12)", linewidth=1.8)
+ax.plot(ses.fittedvalues, label=f"지수평활 (α={alpha:.2f})", linewidth=1.8)
+ax.legend()
+ax.set_title("이동평균 vs 지수평활 (Air Passengers)")
+plt.tight_layout()
+plt.show()
+```
+
+실행하면 세 가지 차이를 눈으로 확인할 수 있습니다.
+
+| | 이동평균 (k=12) | 지수평활 |
+|---|---|---|
+| **시작 시점** | 처음 11개 값은 NaN | 첫 시점부터 값 있음 |
+| **가중치** | 윈도우 내 모두 동일 ($\frac{1}{k}$) | 최근일수록 지수적으로 큼 |
+| **곡선 모양** | 한 점이 들어오고 빠질 때 미세 출렁임 | 연속적으로 부드럽게 감쇠 |
+
 ## 2. SES — 단순지수평활(Simple Exponential Smoothing)
 
 위의 무한합을 매번 계산할 필요는 없습니다. **재귀 형태**로 간단히 표현됩니다.
