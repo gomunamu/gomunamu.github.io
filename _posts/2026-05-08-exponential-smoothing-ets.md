@@ -57,17 +57,16 @@ series = pd.Series(
     name="passengers",
 )
 
-# 이동평균 — 윈도우 안의 값을 단순 평균 (앞 k-1개는 NaN)
+# 이동평균 — 윈도우 k=12 (월별 데이터 기준 1년)
 ma = series.rolling(window=12).mean()
 
-# 지수평활 — α를 데이터로부터 자동 추정
-ses = SimpleExpSmoothing(series).fit()
-alpha = ses.params["smoothing_level"]
+# 지수평활 — α=0.3 고정 (smoothing 효과를 눈으로 확인하기 위한 값)
+ses = SimpleExpSmoothing(series).fit(smoothing_level=0.3, optimized=False)
 
 fig, ax = plt.subplots(figsize=(12, 4))
 ax.plot(series, color="lightgray", label="원본")
 ax.plot(ma, label="이동평균 (k=12)", linewidth=1.8)
-ax.plot(ses.fittedvalues, label=f"지수평활 (α={alpha:.2f})", linewidth=1.8)
+ax.plot(ses.fittedvalues, label="지수평활 (α=0.3)", linewidth=1.8)
 ax.legend()
 ax.set_title("이동평균 vs 지수평활 (Air Passengers)")
 plt.tight_layout()
