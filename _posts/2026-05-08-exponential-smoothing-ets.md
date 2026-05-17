@@ -314,6 +314,23 @@ model = ETSModel(train, error='add', trend='add', seasonal='mul',
 | 자동 선택 | `auto_arima` (pmdarima) | `AutoETS` (statsforecast) |
 | 여러 시계열에 일괄 적용 | 무거움 | 가벼움 |
 
+### 6.1 정상성 — ETS가 비정상 시계열에 바로 적용되는 이유
+
+**ARIMA는 왜 정상성이 필요한가.** ARIMA의 핵심은 자기상관 구조를 추정하는 것입니다. 평균이 이동하는 시계열에서는 자기상관 추정이 의미를 잃기 때문에, 먼저 차분(differencing)으로 평균을 고정합니다. ARIMA의 "I"가 그 차분 횟수입니다.
+
+**ETS는 왜 그 과정이 필요 없는가.** ETS는 비정상성의 원인(추세, 계절성)을 제거하는 대신 **직접 모델링**합니다. $\ell\_t$는 매 시점 업데이트되어 이동하는 평균을 따라가고, $b\_t$ 역시 매 시점 업데이트되어 변화하는 기울기를 추적합니다. "정상화 후 자기상관 분석"이 아니라 "컴포넌트를 직접 추적"하는 패러다임입니다.
+
+흥미로운 사실은 수학적으로는 두 접근이 연결된다는 점입니다.
+
+| ETS | 동치인 ARIMA |
+|-----|-------------|
+| SES | ARIMA(0,1,1) |
+| Holt's linear | ARIMA(0,2,2) |
+
+SES는 1차 차분한 ARIMA(0,1,1)과 동일한 예측을 만들어 냅니다. Holt's는 2차 차분한 ARIMA(0,2,2)와 같습니다. 내부적으로 하는 일은 같지만, ETS는 그것을 "추세 컴포넌트를 평활한다"는 언어로 표현합니다.[^8]
+
+다만 ETS도 한계는 있습니다. 분산이 수준에 비례해 커지는 경우(Air Passengers처럼)는 곱셈(multiplicative) 버전이 필요하고, 구조적 단절(regime change)은 두 모형 모두 잘 다루지 못합니다.
+
 **실무 권고**:
 
 - 어떤 게 좋을지 모르겠으면 **둘 다 적합해 보고 검증 셋의 성능으로 비교**하세요. M3, M4 같은 forecasting 대회에서도 단일 모형이 항상 이기는 일은 없고, **두 모형의 단순 평균이 종종 최고 성능**을 보입니다.[^7]
@@ -353,6 +370,8 @@ model = ETSModel(train, error='add', trend='add', seasonal='mul',
 [^6]: 상태공간 모형(state space model)은 관측 가능한 변수($y\_t$)와 관측 불가능한 상태 변수들($\ell\_t, b\_t, s\_t$)을 분리하여, 상태가 시간에 따라 어떻게 진화하고 그것이 관측치로 어떻게 드러나는지를 두 종류의 방정식(state equation, observation equation)으로 표현하는 틀입니다. 칼만 필터가 같은 틀의 대표적 추정 도구입니다.
 
 [^7]: Makridakis, S., & Hibon, M. (2000). "The M3-Competition: results, conclusions and implications." *International Journal of Forecasting*, 16(4), 451–476. 이후 M4 (2018), M5 (2020) 대회에서도 단순 모형의 조합이 복잡한 단일 모형 못지않게 좋은 성능을 보인다는 결과가 일관되게 확인되었습니다.
+
+[^8]: SES = ARIMA(0,1,1) 동치 관계의 도출은 Hyndman, R. J., et al. (2008). *Forecasting with Exponential Smoothing: The State Space Approach*. Springer, Ch. 11 참고. Holt's = ARIMA(0,2,2) 동치도 같은 책에서 다룹니다.
 
 ---
 
