@@ -190,6 +190,36 @@ $$
 
 세 평활 모수($\alpha, \beta, \gamma$)와 한 개의 구조 모수($m$, 계절 주기)가 들어갑니다. **수준, 추세, 계절성 세 컴포넌트가 각자 자기 평활을 따로 합니다.**
 
+<div style="display:flex; gap:1.5rem; margin:1.5rem 0; align-items:flex-start;">
+<div style="flex:1; border:1px solid #bbb; border-radius:6px; padding:1rem 1.2rem;">
+<p style="font-weight:bold; margin-top:0;">Holt's Linear Trend</p>
+
+$$
+\begin{aligned}
+\ell_t &= \alpha y_t + (1-\alpha)(\ell_{t-1} + b_{t-1}) \\
+b_t &= \beta(\ell_t - \ell_{t-1}) + (1-\beta) b_{t-1} \\
+\hat{y}_{t+h} &= \ell_t + h \cdot b_t
+\end{aligned}
+$$
+
+<p style="margin:0.5rem 0 0; font-size:0.85em; color:#888;">모수: α, β</p>
+</div>
+<div style="flex:1; border:1px solid #bbb; border-radius:6px; padding:1rem 1.2rem;">
+<p style="font-weight:bold; margin-top:0;">Holt-Winters (가법 계절성)</p>
+
+$$
+\begin{aligned}
+\ell_t &= \alpha (y_t - s_{t-m}) + (1-\alpha)(\ell_{t-1} + b_{t-1}) \\
+b_t &= \beta(\ell_t - \ell_{t-1}) + (1-\beta) b_{t-1} \\
+s_t &= \gamma (y_t - \ell_t) + (1-\gamma) s_{t-m} \\
+\hat{y}_{t+h} &= \ell_t + h \cdot b_t + s_{t+h-m}
+\end{aligned}
+$$
+
+<p style="margin:0.5rem 0 0; font-size:0.85em; color:#888;">모수: α, β, γ, m</p>
+</div>
+</div>
+
 곱셈 계절성 버전은 식의 형태만 살짝 다릅니다 (덧셈을 곱셈/나눗셈으로 대체). Air Passengers처럼 계절 변동의 폭이 수준에 비례해 커지는 경우는 곱셈을 씁니다.
 
 statsmodels로 적용하면 이렇게 됩니다.
