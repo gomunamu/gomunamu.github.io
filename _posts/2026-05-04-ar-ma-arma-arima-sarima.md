@@ -4,6 +4,7 @@ date: 2026-05-04 09:00:00 +0900
 categories: [Time Series]
 tags: [ar, ma, arma, arima, sarima, sarimax, acf, pacf, time-series]
 math: true
+permalink: /posts/ar-ma-arma-arima-sarima/
 ---
 
 지난 포스팅에서 정상성과 모수 추정의 발상을 정리했습니다. 이번 글에서는 그 위에 본격적인 모형들을 올려 보겠습니다. AR, MA, ARMA, ARIMA, SARIMA, 그리고 SARIMAX까지. 이름이 많아 보이지만 실은 **AR과 MA라는 두 가지 부품**을 어떻게 조립하느냐의 차이입니다.
