@@ -1,39 +1,66 @@
-# Chirpy Starter
+# gomunamu.github.io
 
-[![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;
-[![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
+개인 기술 블로그 저장소입니다. Jekyll과 Chirpy 테마를 기반으로 운영하며, 시계열 분석과 예측 모델링을 중심으로 공부한 내용을 정리합니다.
 
-A minimal, ready-to-use template for creating a blog with the [**Chirpy**][chirpy] Jekyll theme. Get up and running in minutes with all critical files pre-configured.
+## 블로그 주제
 
-## Why This Starter Exists
+주로 다음 내용을 다룹니다.
 
-When installing Chirpy through [RubyGems.org][gem], Jekyll can only read a subset of theme files (`_data`, `_layouts`, `_includes`, `_sass`, `assets`) and limited `_config.yml` options from the gem. As a result, users cannot enjoy the full out-of-the-box experience that Chirpy offers.
+- 시계열 분석의 기본 개념: 정상성, 단위근, 차분, 자기상관
+- 고전적 예측 모델: ARIMA, SARIMA, ETS
+- 실무형 예측 도구: Prophet
+- Python 기반 실습 코드와 결과 해석
+- 모델 선택, 잔차 진단, 예측구간, backtesting 등 예측 모델링에서 자주 놓치는 부분
 
-To unlock all features, the following files must be present in your Jekyll site:
+글은 가능하면 다음 흐름을 따릅니다.
 
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
+1. 직관
+2. 수식
+3. 코드
+4. 진단
+5. 한계와 주의점
+
+## 로컬 실행
+
+Ruby와 Bundler가 설치되어 있다면 다음 명령으로 로컬에서 확인할 수 있습니다.
+
+```bash
+bundle install
+bundle exec jekyll serve
 ```
 
-This starter bundles those files from the latest **Chirpy** release along with a [CD][CD] workflow, so you can start writing immediately.
+브라우저에서 아래 주소를 엽니다.
 
-## Usage
+```text
+http://127.0.0.1:4000
+```
 
-Check out the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy/wiki).
+정적 사이트 빌드는 다음 명령으로 실행합니다.
 
-## Contributing
+```bash
+bundle exec jekyll build
+```
 
-This repository is automatically updated with new releases from the theme repository. If you encounter any issues or want to contribute to its improvement, please visit the [theme repository][chirpy] to provide feedback.
+## 주요 디렉터리
+
+```text
+_posts/        블로그 게시글
+_tabs/         About 등 상단/사이드 탭 페이지
+assets/        이미지, CSS, 기타 정적 자원
+_config.yml    Jekyll/Chirpy 설정
+```
+
+## 작성 원칙
+
+- 개념 설명은 지나치게 단정하지 않고, 필요한 가정과 한계를 함께 적습니다.
+- 예측 결과는 점예측뿐 아니라 예측구간과 잔차 진단을 함께 확인합니다.
+- AIC/BIC 같은 정보기준은 보조 지표로 보고, 가능하면 검증 구간 성능도 함께 봅니다.
+- 코드 예시는 재현 가능하고 독자가 따라 실행할 수 있도록 작성합니다.
+
+## 기반 테마
+
+이 블로그는 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) Jekyll 테마를 사용합니다.
 
 ## License
 
-This work is published under [MIT][mit] License.
-
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+블로그 콘텐츠의 저작권은 저장소 소유자에게 있습니다. 테마와 템플릿 관련 코드는 각 원저작자의 라이선스를 따릅니다.
