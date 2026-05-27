@@ -23,13 +23,56 @@ math: true
 
 ## 1. 규제가 없으면 어떤 일이 일어나는가
 
-선형 회귀의 목표는 잔차 제곱합(RSS)을 최소화하는 계수 $\mathbf{w}$를 찾는 것입니다.
+### 1.1 RSS — 잔차 제곱합
+
+**RSS(Residual Sum of Squares, 잔차 제곱합)**는 모델 예측값과 실제값 사이 오차를 제곱해 합산한 값입니다.
 
 $$
-\mathcal{L}_{\text{OLS}} = \sum_{i=1}^{n} \left( y_i - \mathbf{w}^\top \mathbf{x}_i \right)^2
+\text{RSS}(\mathbf{w}) = \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2 = \sum_{i=1}^{n} \left( y_i - \mathbf{w}^\top \mathbf{x}_i \right)^2
 $$
+
+각 기호의 의미는 다음과 같습니다.
+
+| 기호 | 의미 |
+|---|---|
+| $n$ | 샘플(데이터 행) 수 |
+| $y_i$ | $i$번째 샘플의 실제 타깃값 |
+| $\mathbf{x}_i = (x_{i1}, \ldots, x_{ip})^\top$ | $i$번째 샘플의 특성 벡터 ($p$개 특성) |
+| $\mathbf{w} = (w_1, \ldots, w_p)^\top$ | 학습할 계수(가중치) 벡터 |
+| $\hat{y}_i = \mathbf{w}^\top \mathbf{x}_i = \sum_{j=1}^p w_j x_{ij}$ | 모델의 예측값 |
+| $y_i - \hat{y}_i$ | 잔차(residual) — 예측이 얼마나 빗나갔는가 |
+
+잔차를 그냥 합산하면 양수·음수가 상쇄되므로, **제곱**해서 모두 양수로 만든 뒤 합산합니다.
+
+### 1.2 OLS — 최소제곱법
+
+**OLS(Ordinary Least Squares, 최소제곱법)**는 RSS를 최소화하는 $\mathbf{w}$를 찾는 방법입니다. 행렬 표기로 쓰면:
+
+$$
+\text{RSS}(\mathbf{w}) = \|\mathbf{y} - X\mathbf{w}\|_2^2 = (\mathbf{y} - X\mathbf{w})^\top (\mathbf{y} - X\mathbf{w})
+$$
+
+여기서 $X$는 $n \times p$ 데이터 행렬(각 행이 샘플 하나), $\mathbf{y}$는 $n$차원 타깃 벡터입니다.
+
+$\mathbf{w}$에 대해 미분하고 0으로 놓으면 **정규방정식(Normal Equation)**이 나옵니다.
+
+$$
+\frac{\partial\, \text{RSS}}{\partial \mathbf{w}} = -2X^\top(\mathbf{y} - X\mathbf{w}) = \mathbf{0}
+\quad\Longrightarrow\quad
+X^\top X\, \mathbf{w} = X^\top \mathbf{y}
+$$
+
+풀면 OLS의 닫힌 해입니다.
+
+$$
+\hat{\mathbf{w}}_{\text{OLS}} = (X^\top X)^{-1} X^\top \mathbf{y}
+$$
+
+### 1.3 OLS의 한계 — 과적합과 다중공선성
 
 특성 수가 많거나 데이터가 적으면, 모델은 훈련 데이터의 **노이즈까지 외워버립니다.** 결과적으로 일부 $w_j$가 매우 크게 추정되어 분산이 폭발합니다.
+
+특히 **다중공선성(multicollinearity)**, 즉 특성들 사이에 강한 선형 상관이 있으면 $X^\top X$가 거의 특이(singular)해져 역행렬 자체가 불안정해집니다. 이 문제는 2.2절에서 자세히 다룹니다.
 
 > **편향-분산 트레이드오프**: 규제를 강하게 주면 편향은 늘지만 분산은 줄어들어, 전반적인 테스트 오차가 감소할 수 있습니다.
 
@@ -43,8 +86,26 @@ $$
 \mathcal{L}_{\text{Ridge}} = \sum_{i=1}^{n} \left( y_i - \mathbf{w}^\top \mathbf{x}_i \right)^2 + \lambda \sum_{j=1}^{p} w_j^2
 $$
 
-패널티 항 $\lambda \|\mathbf{w}\|_2^2$이 **모든 가중치의 제곱합**을 억제합니다.  
-$\lambda$가 클수록 계수가 0에 가깝게 수축(shrinkage)됩니다.
+패널티 항 $\lambda \|\mathbf{w}\|_2^2$이 **모든 가중치의 제곱합**을 억제합니다.
+
+**왜 $\lambda$가 클수록 계수가 0에 가까워지는가?**
+
+목적함수를 $w_j$에 대해 편미분하고 0으로 놓으면:
+
+$$
+\frac{\partial \mathcal{L}_{\text{Ridge}}}{\partial w_j}
+= \underbrace{-2\sum_{i=1}^n x_{ij}(y_i - \hat{y}_i)}_{\text{RSS 기울기}} + \underbrace{2\lambda w_j}_{\text{패널티 기울기}} = 0
+$$
+
+정리하면:
+
+$$
+\sum_{i=1}^n x_{ij}(y_i - \hat{y}_i) = \lambda\, w_j
+$$
+
+좌변은 "$j$번째 특성 $x_j$가 현재 잔차를 얼마나 설명하는가"입니다. 이 값은 데이터에 의해 고정됩니다.  
+우변에서 $\lambda$가 커질수록, 같은 좌변 값을 만족하려면 $w_j$는 더 **작아져야** 합니다.  
+$\lambda \to \infty$이면 $w_j \to 0$, 즉 데이터 신호가 아무리 강해도 계수를 0 근방으로 밀어붙입니다.
 
 ### 2.2 닫힌 형태 해 (Closed-form solution)
 
@@ -54,7 +115,27 @@ $$
 \hat{\mathbf{w}}_{\text{Ridge}} = \left( X^\top X + \lambda I \right)^{-1} X^\top \mathbf{y}
 $$
 
-OLS의 해 $(X^\top X)^{-1} X^\top \mathbf{y}$와 비교하면, 대각 행렬 $\lambda I$가 더해져 **역행렬이 항상 존재**합니다. 다중공선성(multicollinearity) 문제도 자연스럽게 완화됩니다.
+OLS의 해 $(X^\top X)^{-1} X^\top \mathbf{y}$와 비교하면 대각 행렬 $\lambda I$가 더해진 형태입니다.
+
+**왜 다중공선성이 완화되는가? — 고유값 관점**
+
+$X^\top X$를 고유값 분해하면 다음과 같이 쓸 수 있습니다.
+
+$$
+X^\top X = Q\,\text{diag}(\sigma_1, \ldots, \sigma_p)\,Q^\top
+$$
+
+OLS의 역행렬은 $\text{diag}(1/\sigma_1, \ldots, 1/\sigma_p)$를 포함합니다. 특성들이 **강하게 선형 상관**되어 있으면 일부 고유값 $\sigma_k \approx 0$이 되어 $1/\sigma_k$가 폭발 — 계수 추정이 극도로 불안정해집니다.
+
+Ridge를 적용하면:
+
+$$
+(X^\top X + \lambda I)^{-1} = Q\,\text{diag}\!\left(\frac{1}{\sigma_1+\lambda},\, \ldots,\, \frac{1}{\sigma_p+\lambda}\right)Q^\top
+$$
+
+모든 고유값이 $\sigma_k \to \sigma_k + \lambda$로 올라갑니다. $\lambda > 0$이면 **최솟값이 0이 될 수 없으므로** 역행렬이 항상 존재하고 수치적으로 안정됩니다.
+
+$\lambda$가 클수록 분모가 커져 계수가 전체적으로 수축하는 대신, 다중공선성으로 인한 추정 불안정은 사라집니다.
 
 ### 2.3 핵심 특성
 
