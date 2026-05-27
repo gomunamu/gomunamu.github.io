@@ -1,7 +1,7 @@
 ---
 title: "AR, MA, ARMA, ARIMA, SARIMA — 고전 시계열 모형 한 바퀴"
 date: 2026-05-04 09:00:00 +0900
-categories: [Time Series]
+categories: [Statistics, Time Series]
 tags: [ar, ma, arma, arima, sarima, sarimax, acf, pacf, time-series]
 math: true
 permalink: /posts/ar-ma-arma-arima-sarima/

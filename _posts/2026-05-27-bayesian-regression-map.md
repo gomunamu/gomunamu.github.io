@@ -1,7 +1,7 @@
 ---
 title: "베이지안 회귀와 MAP: L1·L2 규제는 왜 사전 분포인가"
 date: 2026-05-27 10:00:00 +0900
-categories: [Machine Learning]
+categories: [Statistics, Machine Learning]
 tags: [bayesian, MAP, prior, posterior, likelihood, ridge, lasso, gaussian, laplace, regularization]
 math: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "시계열 분석 입문: Stationary vs Non-Stationary"
 date: 2026-05-03 09:00:00 +0900
-categories: [Time Series]
+categories: [Statistics, Time Series]
 tags: [python, pandas, statsmodels, ADF-test, stationarity, unit-root]
 math: true
 ---

@@ -1,7 +1,7 @@
 ---
 title: "L1·L2 규제: Lasso와 Ridge의 원리부터 실전까지"
 date: 2026-05-27 09:00:00 +0900
-categories: [Machine Learning]
+categories: [Statistics, Machine Learning]
 tags: [regularization, lasso, ridge, l1, l2, feature-selection, overfitting, python, sklearn]
 math: true
 ---

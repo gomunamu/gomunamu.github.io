@@ -1,7 +1,7 @@
 ---
 title: "지수평활부터 ETS까지 — 단변량 시계열의 또 다른 표준"
 date: 2026-05-08 09:00:00 +0900
-categories: [Time Series]
+categories: [Statistics, Time Series]
 tags: [exponential-smoothing, ets, holt-winters, smoothing, time-series]
 math: true
 ---

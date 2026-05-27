@@ -1,7 +1,7 @@
 ---
 title: "Air Passengers로 SARIMA 끝까지 가기 — 진단부터 예측까지"
 date: 2026-05-05 09:00:00 +0900
-categories: [Time Series]
+categories: [Statistics, Time Series]
 tags: [sarima, arima, box-jenkins, air-passengers, forecast, residual-diagnostics, time-series]
 math: true
 ---

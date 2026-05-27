@@ -1,7 +1,7 @@
 ---
 title: "데이터 뒤에는 모수가 있다 — 모수 추정의 발상부터 시계열까지"
 date: 2026-05-02 18:00:00 +0900
-categories: [Time Series]
+categories: [Statistics, Time Series]
 tags: [likelihood, mle, parameter-estimation, time-series]
 math: true
 ---
