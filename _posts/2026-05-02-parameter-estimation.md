@@ -88,7 +88,13 @@ $$
 loss = nn.CrossEntropyLoss()(logits, labels)
 ```
 
-이론적으로 풀면 **"음의 로그가능도(negative log-likelihood, NLL)"** 입니다. 그리고 SGD/Adam으로 이걸 최소화하는 학습 루프 전체가 곧 **MLE 추정 절차**입니다. 다만 weight decay 같은 정규화가 들어가면 순수 MLE라기보다 MAP 추정 또는 수정된 목적함수에 가까워집니다.
+이론적으로 풀면 **"음의 로그가능도(negative log-likelihood, NLL)"** 입니다. 그리고 SGD/Adam으로 이걸 최소화하는 학습 루프 전체가 곧 **MLE 추정 절차**입니다. 다만 **weight decay** 같은 정규화 항이 붙으면 달라집니다. PyTorch에서 `weight_decay=λ`를 주면 실제 최소화되는 목적함수는 다음과 같습니다.
+
+$$
+\text{NLL}(\boldsymbol{\theta}) + \lambda \|\boldsymbol{\theta}\|^2
+$$
+
+이 형태는 **MAP(Maximum A Posteriori) 추정**과 정확히 같습니다. 베이즈 공식 $p(\boldsymbol{\theta} \mid \text{data}) \propto p(\text{data} \mid \boldsymbol{\theta}) \cdot p(\boldsymbol{\theta})$에서 로그를 취하면 MAP는 NLL + log-prior를 최소화하는 문제가 됩니다. 사전분포로 $\boldsymbol{\theta} \sim \mathcal{N}(0, \sigma^2 I)$를 가정하면 $\log p(\boldsymbol{\theta}) \propto -\|\boldsymbol{\theta}\|^2/(2\sigma^2)$이 되어, MAP 목적함수가 정확히 NLL + L2 패널티 꼴이 됩니다. weight decay의 $\lambda$는 $1/(2\sigma^2)$에 해당하고, $\lambda$를 키울수록 "가중치가 0에 가까울 것"이라는 사전 믿음을 강하게 반영합니다. $\lambda = 0$이면 사전분포가 없는 순수 MLE로 돌아갑니다. 가우시안 대신 라플라스 사전분포를 쓰면 L1 규제(Lasso)가 됩니다. 전체 유도는 [베이지안 회귀와 MAP]({% post_url 2026-05-27-bayesian-regression-map %})와 [L1·L2 규제]({% post_url 2026-05-27-l1-l2-regularization %})에서 다룹니다.
 
 이 연결은 cross-entropy에만 해당하지 않습니다. ML에서 자주 쓰는 loss들은 대부분 특정 확률모형의 NLL입니다.
 
@@ -132,7 +138,7 @@ $$
 p(\boldsymbol{\theta} \mid \text{data}) \propto p(\text{data} \mid \boldsymbol{\theta}) \cdot p(\boldsymbol{\theta})
 $$
 
-오른쪽 첫 번째 항이 **가능도**, 두 번째 항이 **사전분포(prior)** 입니다. 즉 가능도 위에 "모수가 미리 어떤 값일 거라고 믿었는지"를 곱해서, 데이터를 본 후의 믿음을 갱신하는 구조입니다. 베이지안 시계열 모형(예: PyMC, Stan 기반의 베이지안 ARIMA, 베이지안 구조시계열 등)은 이 관점을 따릅니다. 본격적인 이야기는 별도 포스팅으로 다루겠습니다.
+오른쪽 첫 번째 항이 **가능도**, 두 번째 항이 **사전분포(prior)** 입니다. 즉 가능도 위에 "모수가 미리 어떤 값일 거라고 믿었는지"를 곱해서, 데이터를 본 후의 믿음을 갱신하는 구조입니다. 베이지안 시계열 모형(예: PyMC, Stan 기반의 베이지안 ARIMA, 베이지안 구조시계열 등)은 이 관점을 따릅니다. 본격적인 이야기는 [베이지안 회귀와 MAP 포스팅]({% post_url 2026-05-27-bayesian-regression-map %})에서 다룹니다.
 
 ## 7. 마무리 — 다음 포스팅 예고
 
@@ -148,7 +154,7 @@ $$
 
 [^3]: MLE의 통계적 성질(일치성, 점근정규성, 효율성)에 대한 엄밀한 논의는 Casella & Berger(2002) *Statistical Inference* 7장이 표준 레퍼런스입니다.
 
-[^4]: ML에서 흔히 쓰는 loss들과 확률모형의 대응 관계는 Murphy(2022) *Probabilistic Machine Learning: An Introduction* 의 4장 "Statistics"에 잘 정리되어 있습니다. 정규화 항(L1/L2)을 사전분포의 NLL로 해석하는 베이즈 MAP 관점도 같은 책에서 다룹니다.
+[^4]: ML에서 흔히 쓰는 loss들과 확률모형의 대응 관계는 Murphy(2022) *Probabilistic Machine Learning: An Introduction* 의 4장 "Statistics"에 잘 정리되어 있습니다. 정규화 항(L1/L2)을 사전분포의 NLL로 해석하는 베이즈 MAP 관점은 [L1·L2 규제]({% post_url 2026-05-27-l1-l2-regularization %})와 [베이지안 회귀와 MAP]({% post_url 2026-05-27-bayesian-regression-map %}) 포스팅에서 직접 다룹니다.
 
 ---
 

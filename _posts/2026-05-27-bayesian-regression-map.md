@@ -14,7 +14,7 @@ math: true
 
 이 포스팅에서는 그 문장이 왜 성립하는지를 처음부터 차근차근 풀어냅니다.
 
-목표는 세 가지입니다.
+이번 글의 흐름은 이렇습니다.
 
 1. 베이지안 회귀가 무엇인지 — 빈도주의와 무엇이 다른가
 2. MAP 추정이 무엇인지 — 왜 규제와 연결되는가
@@ -50,11 +50,11 @@ math: true
 
 핵심은 사전 분포가 **데이터와 무관하게** 먼저 지정된다는 점입니다. 분석자의 사전 지식이나 도메인 이해를 모델에 주입하는 수단입니다.
 
-### 2.2 우도 (Likelihood)
+### 2.2 가능도 (Likelihood)
 
-**우도 $p(\mathbf{y} \mid X, \mathbf{w})$** 는 파라미터 $\mathbf{w}$가 고정되어 있을 때 이 데이터 $\mathbf{y}$가 나올 확률입니다.
+**가능도 $p(\mathbf{y} \mid X, \mathbf{w})$** 는 파라미터 $\mathbf{w}$가 고정되어 있을 때 이 데이터 $\mathbf{y}$가 나올 확률입니다.
 
-사전 분포가 "데이터를 보기 전 믿음"이라면, 우도는 "데이터가 파라미터에 대해 무엇을 말해주는가"입니다.
+사전 분포가 "데이터를 보기 전 믿음"이라면, 가능도는 "데이터가 파라미터에 대해 무엇을 말해주는가"입니다.
 
 ### 2.3 사후 분포 (Posterior)
 
@@ -64,7 +64,7 @@ $$
 \underbrace{p(\mathbf{w} \mid X, \mathbf{y})}_{\text{사후(posterior)}}
 \;=\;
 \frac{
-  \overbrace{p(\mathbf{y} \mid X, \mathbf{w})}^{\text{우도(likelihood)}}
+  \overbrace{p(\mathbf{y} \mid X, \mathbf{w})}^{\text{가능도(likelihood)}}
   \;\times\;
   \overbrace{p(\mathbf{w})}^{\text{사전(prior)}}
 }{
@@ -82,25 +82,25 @@ $$
 p(\mathbf{w} \mid X, \mathbf{y}) \;\propto\; p(\mathbf{y} \mid X, \mathbf{w}) \;\times\; p(\mathbf{w})
 $$
 
-데이터가 많아질수록 우도 항이 지배적이 되어 **사후 분포가 점점 좁아집니다** — 데이터가 쌓일수록 불확실성이 줄고 확신이 강해지는 현상이 수식으로 표현된 것입니다.
+데이터가 많아질수록 가능도 항이 지배적이 되어 **사후 분포가 점점 좁아집니다** — 데이터가 쌓일수록 불확실성이 줄고 확신이 강해지는 현상이 수식으로 표현된 것입니다.
 
 ### 2.4 MLE와의 결정적 차이
 
 | | 사전 분포 | 사후 분포 | 최대화 대상 |
 |---|---|---|---|
-| **MLE** | 없음 | 없음 | 우도 $p(\mathbf{y} \mid X, \mathbf{w})$ |
+| **MLE** | 없음 | 없음 | 가능도 $p(\mathbf{y} \mid X, \mathbf{w})$ |
 | **MAP** | **있음** | **있음** (최빈값만 사용) | 사후 분포 $p(\mathbf{w} \mid X, \mathbf{y})$ |
 | **완전 베이지안** | 있음 | 있음 (분포 전체 유지) | 해당 없음 (적분) |
 
 MLE는 $\mathbf{w}$를 확률 변수로 보지 않습니다. 사전 분포를 지정할 이유도, 사후 분포를 계산할 이유도 없습니다. 그냥 "이 데이터가 나올 가능성을 가장 크게 만드는 $\mathbf{w}$는 무엇인가"만 묻습니다.
 
-MAP는 사전 분포를 지정하고, 그것과 우도를 곱해 사후 분포를 구성한 뒤, 그 사후 분포의 **최빈값(mode)** 을 최종 추정값으로 씁니다. 사후 분포를 "계산은 하되, 꼭짓점 하나만 취하고 나머지는 버리는" 방식입니다.
+MAP는 사전 분포를 지정하고, 그것과 가능도를 곱해 사후 분포를 구성한 뒤, 그 사후 분포의 **최빈값(mode)** 을 최종 추정값으로 씁니다. 사후 분포를 "계산은 하되, 꼭짓점 하나만 취하고 나머지는 버리는" 방식입니다.
 
 > MLE에 사전 분포를 하나 추가하면 MAP가 됩니다. 그리고 그 사전 분포의 모양이 곧 규제의 종류를 결정합니다.
 
 ---
 
-## 3. 선형 회귀의 우도 — 가우시안 노이즈 가정
+## 3. 선형 회귀의 가능도 — 가우시안 노이즈 가정
 
 선형 회귀 모델은 다음과 같이 씁니다.
 
@@ -115,7 +115,7 @@ p(y_i \mid \mathbf{x}_i, \mathbf{w}) = \mathcal{N}(y_i;\; \mathbf{w}^\top \mathb
 = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\!\left(-\frac{(y_i - \mathbf{w}^\top \mathbf{x}_i)^2}{2\sigma^2}\right)
 $$
 
-샘플이 독립이면 전체 우도는 곱입니다.
+샘플이 독립이면 전체 가능도는 곱입니다.
 
 $$
 p(\mathbf{y} \mid X, \mathbf{w})
@@ -123,21 +123,21 @@ p(\mathbf{y} \mid X, \mathbf{w})
 = \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}} \exp\!\left(-\frac{(y_i - \mathbf{w}^\top \mathbf{x}_i)^2}{2\sigma^2}\right)
 $$
 
-로그 우도로 변환하면:
+로그 가능도로 변환하면:
 
 $$
 \log p(\mathbf{y} \mid X, \mathbf{w})
 = -\frac{1}{2\sigma^2} \underbrace{\sum_{i=1}^n (y_i - \mathbf{w}^\top \mathbf{x}_i)^2}_{\text{RSS}} + \text{const}
 $$
 
-**로그 우도를 최대화 = RSS를 최소화 = OLS**  
-즉, OLS는 "잡음이 가우시안이다"라는 가정 아래 MLE와 같습니다.
+**로그 가능도를 최대화 = RSS를 최소화 = OLS**  
+즉, OLS는 "잡음이 가우시안이다"라는 가정 아래 MLE와 같습니다(가능도와 MLE의 발상은 [이 글]({% post_url 2026-05-02-parameter-estimation %}) 참고).
 
 ---
 
 ## 4. MAP 추정 — 사전 분포를 더하면 규제가 된다
 
-MLE는 우도만 최대화합니다.  
+MLE는 가능도만 최대화합니다.  
 **MAP(Maximum A Posteriori)**는 사후 분포를 최대화합니다.
 
 $$
@@ -153,7 +153,7 @@ $$
 = \arg\max_{\mathbf{w}}\;\bigl[\log p(\mathbf{y} \mid X, \mathbf{w}) + \log p(\mathbf{w})\bigr]
 $$
 
-3절의 로그 우도를 대입하면:
+3절의 로그 가능도를 대입하면:
 
 $$
 = \arg\max_{\mathbf{w}}\;\left[ -\frac{\text{RSS}}{2\sigma^2} + \log p(\mathbf{w}) \right]
@@ -334,7 +334,7 @@ p(y^* \mid \mathbf{x}^*, X, \mathbf{y})
 $$
 
 모든 가능한 $\mathbf{w}$ 값을 평균 내는 셈입니다.  
-가우시안 우도 + 가우시안 사전 분포 조합(켤레 사전, conjugate prior)에서는 이 적분이 해석적으로 풀립니다.
+가우시안 가능도 + 가우시안 사전 분포 조합(켤레 사전, conjugate prior)에서는 이 적분이 해석적으로 풀립니다.
 
 | | MAP | 완전 베이지안 |
 |---|---|---|
@@ -350,7 +350,7 @@ Ridge와 Lasso는 MAP까지만 대응됩니다.
 
 ## 마치며
 
-정리하면 다음과 같습니다.
+정리하면:
 
 1. **가우시안 잡음을 가정한 선형 회귀에서 MLE = OLS**
 2. **여기에 가우시안 사전 분포를 추가해 MAP를 구하면 = Ridge**

@@ -83,7 +83,7 @@ ARMA 모델은 정상성 조건 아래서만 MLE·OLS 추정량이 일치성과 
 즉, "정상성이 전제되어야 추정된 파라미터가 통계적으로 의미 있고, 예측 구간도 신뢰할 수 있다"는 것이 핵심입니다.
 
 > **잠깐 용어:**
-> - **MLE (Maximum Likelihood Estimation, 최대가능도추정)**: "관찰된 데이터를 가장 그럴듯하게 만드는 모수 값을 고른다"는 추정 원리. 가능도 함수 $L(\boldsymbol{\theta} \mid \text{data})$를 최대화하는 $\boldsymbol{\theta}$를 추정값으로 삼습니다.
+> - **MLE (Maximum Likelihood Estimation, 최대가능도추정)**: "관찰된 데이터를 가장 그럴듯하게 만드는 모수 값을 고른다"는 추정 원리. 가능도 함수 $L(\boldsymbol{\theta} \mid \text{data})$를 최대화하는 $\boldsymbol{\theta}$를 추정값으로 삼습니다(→ [가능도와 MLE의 발상]({% post_url 2026-05-02-parameter-estimation %})).
 > - **OLS (Ordinary Least Squares, 보통최소제곱법)**: "예측값과 실제값의 제곱오차 합을 최소화하는 모수 값을 고른다"는 추정 원리. 선형회귀의 표준 추정 방법으로, 오차가 정규분포일 때 OLS와 MLE는 같은 결과를 줍니다.
 > 
 > 두 방법의 정확한 정의와 통계적 성질은 Casella & Berger(2002) *Statistical Inference* 7장에 정리되어 있습니다.

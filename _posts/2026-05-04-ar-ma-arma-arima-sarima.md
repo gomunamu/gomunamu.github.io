@@ -491,7 +491,7 @@ SARIMAX는 $x_t$를 조건부 외생변수로 두는 비대칭 가정 위에 서
 
 [^5]: 95% 신뢰구간(파란 띠)의 폭은 $\pm 1.96/\sqrt{n}$로 근사 계산되며, 이는 백색잡음 가정 하에서 표본 자기상관계수의 점근분포가 $\mathcal{N}(0, 1/n)$을 따른다는 사실에서 나옵니다. 다만 이는 ACF의 모든 시차에 대한 동시 검정이 아니라 각 시차에 대한 개별 검정 기준이라, 시차가 많아지면 일부 막대가 우연히 띠 밖으로 튀어나올 수 있다는 점은 주의해야 합니다 (다중검정 문제). Bartlett(1946) 공식으로 더 정확한 띠를 그릴 수도 있습니다.
 
-[^6]: 가능도(likelihood)는 "이 모수 값이 우리가 관찰한 데이터를 얼마나 그럴듯하게 설명하는지"의 점수로, 데이터 $y_1, \ldots, y_n$이 모수 $\boldsymbol{\theta}$ 하에서 나올 확률(밀도)을 $\boldsymbol{\theta}$의 함수로 본 것입니다. 가능도 자체는 매우 작은 수의 곱이라 수치적으로 다루기 어렵기 때문에 보통 로그를 씌운 **로그가능도** $\log L = \log L(\boldsymbol{\theta} \mid \text{data})$을 씁니다. 곱이 합으로 바뀌어 계산이 안정되고, 미분(MLE 추정)도 쉬워집니다. 가능도와 MLE에 대한 직관적 정의는 이 시리즈의 이전 글 "데이터 뒤에는 모수가 있다 — 모수 추정의 발상부터 시계열까지"에서 다뤘습니다.
+[^6]: 가능도(likelihood)는 "이 모수 값이 우리가 관찰한 데이터를 얼마나 그럴듯하게 설명하는지"의 점수로, 데이터 $y_1, \ldots, y_n$이 모수 $\boldsymbol{\theta}$ 하에서 나올 확률(밀도)을 $\boldsymbol{\theta}$의 함수로 본 것입니다. 가능도 자체는 매우 작은 수의 곱이라 수치적으로 다루기 어렵기 때문에 보통 로그를 씌운 **로그가능도** $\log L = \log L(\boldsymbol{\theta} \mid \text{data})$을 씁니다. 곱이 합으로 바뀌어 계산이 안정되고, 미분(MLE 추정)도 쉬워집니다. 가능도와 MLE에 대한 직관적 정의는 이 시리즈의 이전 글 ["데이터 뒤에는 모수가 있다"]({% post_url 2026-05-02-parameter-estimation %})에서 다뤘습니다.
 
 [^7]: AIC는 Akaike(1974) "A new look at the statistical model identification"에서, BIC는 Schwarz(1978) "Estimating the dimension of a model"에서 처음 제안되었습니다. 두 기준의 통계학적 유도와 비교에 대한 표준 레퍼런스는 Burnham & Anderson(2002) *Model Selection and Multimodel Inference* (2nd ed., Springer)입니다.
 

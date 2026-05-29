@@ -31,8 +31,6 @@ $$
 \text{RSS}(\mathbf{w}) = \sum_{i=1}^{n} \left( y_i - \hat{y}_i \right)^2 = \sum_{i=1}^{n} \left( y_i - \mathbf{w}^\top \mathbf{x}_i \right)^2
 $$
 
-각 기호의 의미는 다음과 같습니다.
-
 - $n$: 샘플(데이터 행) 수
 - $y_i$: $i$번째 샘플의 실제 타깃값
 - $\mathbf{x}_i$: $i$번째 샘플의 특성 벡터 ($p$개 특성)
@@ -320,4 +318,4 @@ L1과 L2 규제는 단순히 "과적합을 막는 테크닉"을 넘어, **어떤
 - L2 = 가우시안 사전 분포 → 계수가 전체적으로 작기를 기대
 - L1 = 라플라스 사전 분포 → 계수 대부분이 0이기를 기대
 
-베이즈 관점에서 보면 규제는 MAP(Maximum A Posteriori) 추정과 동치입니다. 이 연결은 나중에 베이지안 회귀 포스팅에서 더 자세히 다루겠습니다.
+베이즈 관점에서 보면 규제는 MAP(Maximum A Posteriori) 추정과 동치입니다. 이 연결은 [베이지안 회귀와 MAP 포스팅]({% post_url 2026-05-27-bayesian-regression-map %})에서 자세히 다룹니다.
