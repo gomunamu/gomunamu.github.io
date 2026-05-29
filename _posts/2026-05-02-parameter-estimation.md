@@ -94,7 +94,25 @@ $$
 \text{NLL}(\boldsymbol{\theta}) + \lambda \|\boldsymbol{\theta}\|^2
 $$
 
-이 형태는 **MAP(Maximum A Posteriori) 추정**과 정확히 같습니다. 베이즈 공식 $p(\boldsymbol{\theta} \mid \text{data}) \propto p(\text{data} \mid \boldsymbol{\theta}) \cdot p(\boldsymbol{\theta})$에서 로그를 취하면 MAP는 NLL + log-prior를 최소화하는 문제가 됩니다. 사전분포로 $\boldsymbol{\theta} \sim \mathcal{N}(0, \sigma^2 I)$를 가정하면 $\log p(\boldsymbol{\theta}) \propto -\|\boldsymbol{\theta}\|^2/(2\sigma^2)$이 되어, MAP 목적함수가 정확히 NLL + L2 패널티 꼴이 됩니다. weight decay의 $\lambda$는 $1/(2\sigma^2)$에 해당하고, $\lambda$를 키울수록 "가중치가 0에 가까울 것"이라는 사전 믿음을 강하게 반영합니다. $\lambda = 0$이면 사전분포가 없는 순수 MLE로 돌아갑니다. 가우시안 대신 라플라스 사전분포를 쓰면 L1 규제(Lasso)가 됩니다. 전체 유도는 [베이지안 회귀와 MAP]({% post_url 2026-05-27-bayesian-regression-map %})와 [L1·L2 규제]({% post_url 2026-05-27-l1-l2-regularization %})에서 다룹니다.
+이 형태는 **MAP(Maximum A Posteriori) 추정**과 정확히 같습니다. MAP는 원래 사후분포를 **최대화**하는 문제입니다.
+
+$$
+\hat{\boldsymbol{\theta}}_{\text{MAP}} = \arg\max_{\boldsymbol{\theta}} \left[ \log p(\text{data} \mid \boldsymbol{\theta}) + \log p(\boldsymbol{\theta}) \right]
+$$
+
+경사하강법에 맞게 부호를 뒤집어 **최소화** 문제로 바꾸면:
+
+$$
+\hat{\boldsymbol{\theta}}_{\text{MAP}} = \arg\min_{\boldsymbol{\theta}} \left[ \underbrace{-\log p(\text{data} \mid \boldsymbol{\theta})}_{\text{NLL}} \underbrace{- \log p(\boldsymbol{\theta})}_{\text{prior 항}} \right]
+$$
+
+사전분포로 $\boldsymbol{\theta} \sim \mathcal{N}(0, \sigma^2 I)$를 가정하면 $\log p(\boldsymbol{\theta}) \propto -\|\boldsymbol{\theta}\|^2/(2\sigma^2)$이므로, $-\log p(\boldsymbol{\theta}) \propto +\lambda\|\boldsymbol{\theta}\|^2$이 됩니다. 가우시안 prior의 log가 음수이고, 그걸 부호 반전하면 양수 패널티가 되어 NLL과 **덧셈**으로 합쳐집니다.
+
+$$
+\hat{\boldsymbol{\theta}}_{\text{MAP}} = \arg\min_{\boldsymbol{\theta}} \left[ \text{NLL}(\boldsymbol{\theta}) + \lambda \|\boldsymbol{\theta}\|^2 \right]
+$$
+
+weight decay의 $\lambda$는 $1/(2\sigma^2)$에 해당하고, $\lambda$를 키울수록 "가중치가 0에 가까울 것"이라는 사전 믿음을 강하게 반영합니다. $\lambda = 0$이면 사전분포가 없는 순수 MLE로 돌아갑니다. 가우시안 대신 라플라스 사전분포를 쓰면 L1 규제(Lasso)가 됩니다. 전체 유도는 [베이지안 회귀와 MAP]({% post_url 2026-05-27-bayesian-regression-map %})와 [L1·L2 규제]({% post_url 2026-05-27-l1-l2-regularization %})에서 다룹니다.
 
 이 연결은 cross-entropy에만 해당하지 않습니다. ML에서 자주 쓰는 loss들은 대부분 특정 확률모형의 NLL입니다.
 
