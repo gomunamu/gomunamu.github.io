@@ -16,3 +16,22 @@ order: 4
 글은 가능하면 **직관 → 수식 → 코드 → 진단 → 한계** 순서로 쓰려고 합니다. 특히 ML/AI는 익숙하지만 통계적 시계열 모델은 낯선 분들이 큰 그림을 잡을 수 있도록 설명하는 것을 목표로 합니다.
 
 일부 글은 AI의 도움을 받아 초안을 만들거나 표현을 다듬었습니다. 다만 가능한 한 참고문헌을 밝히고, 수식·코드·개념 설명은 다시 확인하려고 노력하고 있습니다. 오류나 보완할 점이 있다면 댓글로 알려 주세요.
+
+---
+
+## About Time Series Lab
+
+This blog is a personal lab where I work through the statistical foundations of machine learning, with a focus on time series. Each post is written to verify my own understanding — if I cannot explain it cleanly, I do not understand it yet.
+
+**Topics covered (May 2026 ~):**
+- Parameter estimation and stationarity
+- ARIMA family (AR, MA, ARMA, ARIMA, SARIMA, SARIMAX)
+- Exponential smoothing and ETS
+- Prophet (regression decomposition)
+- ARCH/GARCH (volatility modeling)
+- L1/L2 regularization and Bayesian regression
+- *(upcoming)* State space models, Bayesian time series, deep learning forecasters
+
+**Tools:** Python, statsmodels, prophet, PyMC, scikit-learn.
+
+Written with AI as a thinking partner; every claim is verified before publishing.
