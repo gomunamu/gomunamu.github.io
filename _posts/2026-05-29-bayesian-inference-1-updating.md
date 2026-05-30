@@ -4,6 +4,7 @@ date: 2026-05-29 09:00:00 +0900
 categories: [Machine Learning]
 tags: [bayesian, prior, posterior, likelihood, beta-binomial, conjugate, updating]
 math: true
+published: false
 ---
 
 ## 핵심 아이디어
@@ -32,8 +33,8 @@ $$
 | 불확실성의 위치 | 데이터 (반복 실험) | 파라미터 자체 |
 | 추론 결과 | 점추정 + 신뢰구간 | 분포 (posterior) |
 
-빈도주의는 "참값이 하나 있는데 우리가 모를 뿐"이라고 봅니다.  
-베이지안은 "파라미터에 대한 불확실성을 분포로 명시적으로 표현"합니다.
+빈도주의는 보통 "참값이 하나 있는데 우리가 모를 뿐"이라는 관점에서 출발합니다.  
+베이지안은 파라미터에 대한 불확실성을 분포로 명시적으로 표현합니다.
 
 ---
 
@@ -79,13 +80,15 @@ Prior가 데이터와 섞여 posterior를 중간 어딘가로 당깁니다.
 
 $n$번 던져 $k$번 앞면: posterior는 $\text{Beta}(1+k,\; 1+n-k)$
 
-데이터가 많아질수록 posterior의 분산이 줄어들고, prior의 영향은 희석됩니다.
+데이터가 많아질수록 posterior의 분산이 줄어들고, prior의 영향은 대개 희석됩니다.
+
+정규성 조건과 모델이 잘 지정되었다는 가정 아래에서는 posterior가 점점 한 점 근처로 집중하는 현상이 나타납니다.
 
 $$
-n \to \infty \implies p(\theta \mid \mathcal{D}) \to \delta(\theta - \hat{\theta}_{\text{MLE}})
+n \to \infty \implies p(\theta \mid \mathcal{D}) \text{ concentrates near } \theta_0
 $$
 
-**베이지안 추정은 데이터가 충분하면 빈도주의 추정으로 수렴합니다.**
+실무적으로는 **데이터가 충분할수록 prior보다 likelihood가 지배적이 되어, 베이지안 추정과 빈도주의 추정이 비슷해지는 경우가 많습니다.**
 
 ---
 
@@ -97,7 +100,7 @@ $$
 - 데이터를 볼 때마다 posterior가 갱신
 - 오늘의 posterior가 내일의 prior
 
-이 갱신 루프는 순차적으로 적용해도 한꺼번에 적용해도 결과가 같습니다 — 베이즈 룰의 교환법칙.
+동일한 likelihood factorization이 성립한다면, 이 갱신 루프는 순차적으로 적용해도 한꺼번에 적용해도 같은 posterior를 얻습니다.
 
 ---
 

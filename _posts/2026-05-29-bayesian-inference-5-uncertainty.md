@@ -4,6 +4,7 @@ date: 2026-05-29 13:00:00 +0900
 categories: [Machine Learning]
 tags: [bayesian-deep-learning, uncertainty, epistemic, aleatoric, dropout, bnn, active-learning, ood]
 math: true
+published: false
 ---
 
 ## 일반 딥러닝의 문제
@@ -12,8 +13,8 @@ math: true
 
 > 모델이 "0.97 확률로 고양이"라고 말할 때, 그 0.97을 믿어도 되는가?
 
-일반 신경망은 **점추정** (point estimate) — 가중치 $w$에 대해 하나의 값을 줍니다.  
-불확실성을 표현하는 구조 자체가 없습니다.
+일반 신경망은 보통 가중치 $w$에 대해 **점추정** (point estimate)을 학습합니다.  
+출력 확률은 만들 수 있지만, 그것이 잘 보정된 epistemic uncertainty를 주는 것은 아닙니다.
 
 ---
 
@@ -55,17 +56,17 @@ $$
 p(y \mid x, \mathcal{D}) = \int p(y \mid x, w)\, p(w \mid \mathcal{D})\, dw
 $$
 
-이 적분이 epistemic uncertainty를 자연스럽게 포착합니다.
+이 적분은 epistemic uncertainty를 모델 안으로 직접 끌어들이는 한 가지 방법입니다.
 
 문제: 수백만 개의 가중치에 대해 posterior를 구하는 것은 계산적으로 매우 어렵습니다.
 
 ---
 
-## Dropout = Approximate BNN
+## Dropout으로 근사하기
 
 Gal & Ghahramani (2016)의 발견:
 
-> **테스트 시에도 dropout을 켜두고 여러 번 예측하면, 이는 BNN의 approximate posterior sampling과 동치다.**
+> 테스트 시에도 dropout을 켜두고 여러 번 예측하면, 특정 가정 아래 variational approximation 관점으로 해석할 수 있다.
 
 ```python
 # 훈련 시
@@ -79,7 +80,7 @@ mean = torch.stack(preds).mean(0)
 variance = torch.stack(preds).var(0)  # epistemic uncertainty
 ```
 
-분산이 크면 모델이 해당 입력에 대해 불확실하다는 신호입니다.
+예측 분산이 크면 모델이 해당 입력에 대해 더 불확실하다는 신호로 해석할 수 있습니다. 다만 이것이 모든 경우에 신뢰할 만한 uncertainty를 보장하지는 않습니다.
 
 ---
 
@@ -89,8 +90,8 @@ variance = torch.stack(preds).var(0)  # epistemic uncertainty
 
 ### 1. 아는 것과 모르는 것을 구분
 
-훈련 데이터 분포 안 (in-distribution): 낮은 uncertainty  
-분포 밖 (out-of-distribution): 높은 uncertainty
+이상적으로는 훈련 데이터 분포 안에서는 낮은 uncertainty, 분포 밖에서는 높은 uncertainty가 나오길 기대합니다.  
+하지만 실제 근사 방법들은 OOD에서 항상 잘 동작하지 않을 수 있습니다.
 
 ### 2. 데이터로 Prior를 갱신
 
@@ -123,23 +124,23 @@ $$
 ```
 1편: 데이터로 분포를 갱신한다
 2편: Prior = 명시화된 가정
-3편: Inductive bias = Prior (ML과 베이지안은 같은 말)
+3편: Inductive bias와 Prior의 연결
 4편: Posterior 계산 = MCMC / VI
 5편: 불확실성 정량화 = 모델의 지능화
 ```
 
 이 다섯 가지 시각이 연결되면:
 
-> **ML 모델을 설계한다** = prior를 정의한다  
-> **모델을 학습시킨다** = posterior를 추정한다  
-> **모델이 지능적이다** = 불확실성을 알고 표현한다
+> **ML 모델을 설계한다** = 어떤 가설과 제약을 선호할지 정한다  
+> **모델을 학습시킨다** = 그 가설 공간 안에서 데이터를 반영해 믿음을 갱신한다  
+> **모델이 지능적이다** = 자신의 불확실성을 어느 정도 구분하고 표현한다
 
 ---
 
 ## 핵심 요약
 
-- 일반 신경망은 불확실성을 표현하지 못함
+- 일반 신경망의 출력 확률은 epistemic uncertainty와 다를 수 있음
 - BNN: 가중치에 분포 → 예측 불확실성 정량화
-- Dropout: 구현이 간단한 approximate BNN
+- MC Dropout: 구현이 간단한 근사적 uncertainty 추정 방법
 - Epistemic uncertainty = 모델이 모르는 것 = 데이터로 줄일 수 있는 것
 - 모델 지능화 = 아는 것/모르는 것을 구분하는 능력

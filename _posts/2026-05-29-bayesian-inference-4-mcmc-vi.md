@@ -4,6 +4,7 @@ date: 2026-05-29 12:00:00 +0900
 categories: [Machine Learning]
 tags: [mcmc, variational-inference, elbo, kl-divergence, hmc, nuts, pymc, posterior, approximate-inference]
 math: true
+published: false
 ---
 
 ## 문제: Posterior를 어떻게 구하나
@@ -20,8 +21,8 @@ $$
 p(\mathcal{D}) = \int p(\mathcal{D} \mid \theta)\, p(\theta)\, d\theta
 $$
 
-이 적분은 대부분의 실제 모델에서 **계산 불가능** (intractable)합니다.  
-Conjugate prior가 있을 때만 닫힌 형태로 풀립니다.
+이 적분은 대부분의 실제 모델에서 **닫힌 형태로 계산하기 어렵습니다** (intractable).  
+Conjugate prior가 있는 일부 경우에는 해석적으로 풀 수 있습니다.
 
 ---
 
@@ -51,13 +52,13 @@ $$
 \text{gradient of } \log p(\theta \mid \mathcal{D}) \text{ 를 따라 이동}
 $$
 
-**NUTS (No-U-Turn Sampler)**: HMC의 step size를 자동 조정 — PyMC, Stan의 기본값.
+**NUTS (No-U-Turn Sampler)**: HMC의 경로 길이를 적응적으로 정해 튜닝 부담을 줄여줍니다. PyMC, Stan에서 널리 기본 선택지로 쓰입니다.
 
 ### MCMC의 특징
 
 | 장점 | 단점 |
 |---|---|
-| 이론적으로 정확한 posterior | 느림 (특히 대규모 데이터) |
+| 충분히 수렴하면 posterior expectation을 일관되게 근사 | 느림 (특히 대규모 데이터) |
 | 복잡한 모델에도 적용 가능 | Convergence 진단 필요 |
 | 불확실성 정량화 정확 | 고차원에서 mixing 문제 |
 
