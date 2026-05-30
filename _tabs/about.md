@@ -8,10 +8,13 @@ order: 4
 
 주로 다음 주제를 다룹니다.
 
-- 정상성, 단위근, 차분 같은 시계열 분석의 기본 개념
-- ARIMA/SARIMA, ETS, Prophet 등 고전적·실무적 예측 모델
-- Python 기반의 실습 코드와 결과 해석
-- 모델 선택, 잔차 진단, 예측 성능 평가에서 자주 빠지는 함정
+- 파라미터 추정과 최대가능도(MLE)
+- 정상성, 단위근, 차분 등 시계열의 기초 개념
+- AR, MA, ARMA, ARIMA, SARIMA 모델군
+- 지수평활법과 ETS 모델
+- Prophet (추세·계절성 분해 기반 예측)
+- ARCH/GARCH (변동성 모델링)
+- L1/L2 정규화와 베이지안 회귀
 
 글은 가능하면 **직관 → 수식 → 코드 → 진단 → 한계** 순서로 쓰려고 합니다. 특히 ML/AI는 익숙하지만 통계적 시계열 모델은 낯선 분들이 큰 그림을 잡을 수 있도록 설명하는 것을 목표로 합니다.
 
@@ -19,19 +22,20 @@ order: 4
 
 ---
 
-## About Time Series Lab
+## About this blog
 
-This blog is a personal lab where I work through the statistical foundations of machine learning, with a focus on time series. Each post is written to verify my own understanding — if I cannot explain it cleanly, I do not understand it yet.
+Hi. This blog is a space where I study and document time series analysis and forecasting models.
 
-**Topics covered (May 2026 ~):**
-- Parameter estimation and stationarity
-- ARIMA family (AR, MA, ARMA, ARIMA, SARIMA, SARIMAX)
-- Exponential smoothing and ETS
-- Prophet (regression decomposition)
+Topics mainly covered:
+
+- Parameter estimation and maximum likelihood (MLE)
+- Stationarity, unit roots, and differencing
+- AR, MA, ARMA, ARIMA, SARIMA model family
+- Exponential smoothing and ETS models
+- Prophet (trend and seasonality decomposition-based forecasting)
 - ARCH/GARCH (volatility modeling)
 - L1/L2 regularization and Bayesian regression
-- *(upcoming)* State space models, Bayesian time series, deep learning forecasters
 
-**Tools:** Python, statsmodels, prophet, PyMC, scikit-learn.
+Posts follow the structure of **intuition → formula → code → diagnostics → limitations** where possible. The goal is to help readers who are familiar with ML/AI but new to statistical time series models build a solid picture.
 
-Written with AI as a thinking partner; every claim is verified before publishing.
+Some posts were drafted or refined with AI assistance. I try to cite sources wherever possible and double-check all formulas, code, and concept explanations. If you spot an error or something that needs clarification, please leave a comment.
