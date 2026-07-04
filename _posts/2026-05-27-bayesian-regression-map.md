@@ -86,11 +86,9 @@ $$
 MAP 목적함수에 대입하면 ($\lambda = \sigma^2 / \tau^2$):
 
 $$
-\boxed{
 \hat{\mathbf{w}}_{\text{MAP}}
 = \arg\min_{\mathbf{w}} \left[ \text{RSS} + \lambda \sum_{j=1}^p w_j^2 \right]
 = \hat{\mathbf{w}}_{\text{Ridge}}
-}
 $$
 
 가우시안은 $w=0$에서 부드럽게 정점을 찍습니다. $-\log p(w) \propto w^2$인 포물선이므로, 계수를 0 근방으로 **수축**시키되 정확히 0으로 만들지는 못합니다.
@@ -108,11 +106,9 @@ $$
 MAP 목적함수에 대입하면 ($\lambda = 2\sigma^2 / b$):
 
 $$
-\boxed{
 \hat{\mathbf{w}}_{\text{MAP}}
 = \arg\min_{\mathbf{w}} \left[ \text{RSS} + \lambda \sum_{j=1}^p |w_j| \right]
 = \hat{\mathbf{w}}_{\text{Lasso}}
-}
 $$
 
 라플라스는 $w=0$에서 **뾰족한 꼭짓점**을 가집니다. $-\log p(w) \propto \lvert w \rvert$인 V자이므로, 최적화가 $w=0$에 붙어버리는 현상이 발생합니다. 이것이 Lasso가 계수를 정확히 0으로 만드는 이유입니다.
