@@ -39,7 +39,7 @@ $$
 
 ## 2. VAR(p)의 수식과 구조
 
-변수 $k$개를 벡터 $\mathbf{y}_t = (y_{1,t}, \ldots, y_{k,t})^\top$로 묶으면, VAR($p$)는 행렬 형태로 깔끔하게 써집니다.
+변수 $k$개를 벡터 $\mathbf{y}\_t = (y\_{1,t}, \ldots, y\_{k,t})^\top$로 묶으면, VAR($p$)는 행렬 형태로 깔끔하게 써집니다.
 
 $$
 \mathbf{y}_t = \mathbf{c} + A_1 \mathbf{y}_{t-1} + A_2 \mathbf{y}_{t-2} + \cdots + A_p \mathbf{y}_{t-p} + \boldsymbol{\epsilon}_t
